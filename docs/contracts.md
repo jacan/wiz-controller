@@ -14,6 +14,13 @@ All communication happens via JSON over UDP to port 38899.
 }
 ```
 
+Colour is controlled by exactly one of:
+
+- `temp`: white colour temperature in Kelvin
+- `r`, `g`, `b`: direct RGB channels
+
+A single `setPilot` command must not contain both `temp` and RGB values.
+
 ## 2. Internal Rust Contract
 Every component that wants to control the lights must emit this exact struct to the Controller queue:
 
@@ -25,13 +32,21 @@ pub enum Priority {
     SigKill = 100,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ColorMode {
+    /// White colour temperature in Kelvin.
+    Temperature(u16),
+    /// Direct RGB colour.
+    Rgb { red: u16, green: u16, blue: u16 },
+}
+
 #[derive(Debug, Clone)]
 pub struct LightingCommand {
     pub priority: Priority,
     pub state: bool,
     pub dimming: u8,
-    pub color_temp: Option<u16>, // In Kelvin!
-    pub rgb: Option<(u16, u16, u16)>, // Color changes represented in RGB
+    /// Mutually exclusive colour choice. None leaves colour untouched.
+    pub color: Option<ColorMode>,
     pub source: String,
 }
 ```
