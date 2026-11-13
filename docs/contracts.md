@@ -30,8 +30,8 @@ pub struct LightingCommand {
     pub priority: Priority,
     pub state: bool,
     pub dimming: u8,
-    pub color_temp: Option<u16>, //In Kelvin!
-    pub rgb: Option<u16, u16, u16> // Color changes represented in RGB
+    pub color_temp: Option<u16>, // In Kelvin!
+    pub rgb: Option<(u16, u16, u16)>, // Color changes represented in RGB
     pub source: String,
 }
 ```
